@@ -1,7 +1,7 @@
 import tkinter as tk
 
+# window・ウィジェット作成
 def create_window():
-    # window・ウィジェット作成
 
     root = tk.Tk()
     root.title("Tkinter Sample")
@@ -13,20 +13,21 @@ def create_window():
     # ボタンの作成と配置
     # ラムダを使ってon_button_clickにラベルを渡す
     button = tk.Button(root, text="Click Me", command=lambda: on_button_click(label))
-    # button = tk.Button(root, text="Click Me", command=on_button_click(label))
     button.pack(pady=10)
 
     return root
 
+# ボタンクリック時の動作
 def on_button_click(label):
-    # クリック時の動作
     label.config(text="Button clicked!")
 
+# メインループ開始(ユーザー入力待機状態)
 def start_main_loop(root):
-    # メインループ開始(ユーザー入力待機状態)
     root.mainloop()
 
 if __name__ == "__main__":
+    # window・ウィジェット作成
     root = create_window()
+    # メインループ開始(ユーザー入力待機状態)
     start_main_loop(root)
 
