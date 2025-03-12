@@ -30,16 +30,29 @@ def create_input_form(conn):
 
     return root
 
-def create_popup_window(root):
+def create_popup_window(root, entry_data):
     # ウィンドウ作成
     popup = tk.Toplevel()
     popup.title("submit complete")
 
-    label_popup = tk.Label(popup, text="登録完了")
-    label_popup.pack(pady=10)
+    # 出力内容
+    headers = ['Year', 'Month', 'Electricity Cost', 'Gas Cost', 'Water Cost']
+    # 「登録完了」
+    label_popup = tk.Label(popup, text="登録完了", font=("Arial", 10, "bold"))
+    label_popup.grid(row=0, column=0, columnspan=len(headers), pady=10)
+    # ヘッダー
+    for col, header in enumerate(headers):
+        label = tk.Label(popup, text=header, font=("Arial", 10, "bold"))
+        label.grid(row=1, column=col, padx=5, pady=5)
+    # 登録内容
+    for row, data in enumerate(entry_data):
+        for col, num in enumerate(data):
+            label = tk.Label(popup, text=num, font=("Arial", 10, "bold"))
+            label.grid(row=row+2, column=col, padx=5, pady=5)
+
 
     popup_button = tk.Button(popup, text="OK", command=lambda: close_window(root))
-    popup_button.pack(padx=20, pady=20)
+    popup_button.grid(row=len(entry_data)+2, column=0, columnspan=len(headers), pady=10)
 
     return popup
 
@@ -47,8 +60,9 @@ def close_window(root):
     root.destroy()
 
 def submit_data(entries, root):
-    for row_entries in entries:
+    entry_data = []
 
+    for row_entries in entries:
         skip_this_row = False
         for entry in row_entries:
             if entry.get() == "":
@@ -64,8 +78,9 @@ def submit_data(entries, root):
         water = row_entries[4].get()
 
         insert_db(year, month, electricity, gas, water)
+        entry_data.append([year, month, electricity, gas, water])
 
-    create_popup_window(root)
+    create_popup_window(root, entry_data)
 
 
 # DBに接続
@@ -105,7 +120,11 @@ def insert_db(year, month, electricity, gas, water):
 
 # データの全件取得
 def select_db(conn):
-    rows = conn.execute(("SELECT year, month, electricity_cost, gas_cost, water_cost FROM utilities"))
+    rows = conn.execute(('''
+                    SELECT year, month, electricity_cost, gas_cost, water_cost
+                    FROM utilities
+                    ORDER BY year DESC, month DESC
+                    '''))
     for row in rows:
         print(row[0], row[1],row[2], row[3], row[4])
 
